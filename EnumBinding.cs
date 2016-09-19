@@ -8,6 +8,9 @@ using System.Windows.Markup;
 
 namespace Tonic.UI
 {
+    /// <summary>
+    /// Bind enum values using the EnumConverter
+    /// </summary>
     public class EnumBinding : MarkupExtension
     {
         public EnumBinding(string Path)

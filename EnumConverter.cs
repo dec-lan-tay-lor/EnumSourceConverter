@@ -9,6 +9,9 @@ using System.Windows.Data;
 using System.Reflection;
 namespace Tonic.UI
 {
+    /// <summary>
+    /// Convert enum values to EnumValue type or strings
+    /// </summary>
     public class EnumConverter : IValueConverter
     {
         [ThreadStatic]

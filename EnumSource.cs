@@ -22,6 +22,9 @@ namespace Tonic.UI
         [ThreadStatic]
         static Dictionary<Type, object[]> cache = new Dictionary<Type, object[]>();
 
+        /// <summary>
+        /// True if friendly names should be used. If used, the EnumBinding should be used instead of the WPF binding in order to convert back from the internal representation
+        /// </summary>
         public bool Friendly { get; set; } = true;
 
         public EnumSource(object value)
@@ -37,7 +40,7 @@ namespace Tonic.UI
             {
                 _binding = (Binding)value;
             }
-            else if (value is String)
+            else if (value is string)
             {
                 _binding = new Binding((string)value);
                 _binding.Mode = BindingMode.OneWay;
@@ -69,6 +72,7 @@ namespace Tonic.UI
 
         public override object ProvideValue(IServiceProvider serviceProvider)
         {
+            //If the type is unknown;
             if (_type == null)
             {
                 //provider of target object and it's property
@@ -76,6 +80,7 @@ namespace Tonic.UI
                     .GetService(typeof(IProvideValueTarget));
                 var target = (FrameworkElement)targetProvider.TargetObject;
 
+                //Extract indirectly the property type and the enum info using the GetTypeEnumConverter:
                 var B = new Binding(_binding.Path.Path);
                 B.Mode = BindingMode.TwoWay;
                 var conv = new GetTypeEnumConverter();
@@ -88,6 +93,7 @@ namespace Tonic.UI
             }
             else
             {
+                //The type is already known, extract enum info:
                 if (Friendly)
                     return GetEnumValues(_type).Select(x => EnumValue.Create(x));
                 else
@@ -102,7 +108,7 @@ namespace Tonic.UI
         /// <returns></returns>
         public static IEnumerable<object> GetEnumValues(Type Type)
         {
-            //Extract nullabel argument:
+            //Extract nullable argument:
             if(Type.IsGenericType && Type.GetGenericTypeDefinition() == typeof(Nullable<>))
             {
                 Type = Type.GetGenericArguments()[0];

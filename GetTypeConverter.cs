@@ -11,7 +11,13 @@ namespace Tonic.UI
     class GetTypeEnumConverter : IValueConverter
     {
         public BindingExpression expr;
+        /// <summary>
+        /// True to use Friendly names
+        /// </summary>
         public bool UseDescription;
+        /// <summary>
+        /// Null if the type is still unknown
+        /// </summary>
         private Type Type;
 
         private object cache;
