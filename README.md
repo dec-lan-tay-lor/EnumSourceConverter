@@ -1,6 +1,11 @@
 # EnumSourceConverter
 Directly bind items controls to enum properties
 
+#Nuget:
+```
+Install-Package Tonic.UI.EnumSource
+```
+
 Add enum type properties to your view model:
 ```C#
   public enum ScopeType
