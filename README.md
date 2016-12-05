@@ -13,6 +13,7 @@ public enum Animal
 {
     Dog,
     Cat,
+    [Description("Danger noodle")]
     Snake
 }
 public class ViewModel
