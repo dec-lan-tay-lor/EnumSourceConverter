@@ -9,15 +9,16 @@ Install-Package Tonic.UI.EnumSource
 #Usage
 Add enum type properties to your view model:
 ```C#
-public enum ScopeType
+public enum Animal
 {
-    Public,
-    Private,
-    Protected
+    Dog,
+    Cat,
+    [Description("Danger noodle")]
+    Snake
 }
 public class ViewModel
 {
-    public ScopeType? Scope { get; set; }
+    public Animal? PetType { get; set; }
 }
 ```
 
@@ -26,5 +27,5 @@ Bind items controls to that property:
 ...
 xmlns:ui="http://toniccomputing.com/patterns/ui"
 ...
-<ComboBox ItemsSource="{ui:EnumSource Scope}" SelectedItem="{ui:EnumBinding Scope}" />
+<ComboBox ItemsSource="{ui:EnumSource PetType}" SelectedItem="{ui:EnumBinding PetType}" />
 ```
