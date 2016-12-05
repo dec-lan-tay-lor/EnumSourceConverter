@@ -22,7 +22,7 @@ namespace Tonic.UI
         /// Add whitespaces to capitalization changes
         /// </summary>
         /// <returns></returns>
-        static string FixName(string Name)
+        public static string FixName(string Name)
         {
             if (string.IsNullOrEmpty(Name)) return "";
 
