@@ -92,7 +92,12 @@ namespace Tonic.UI
                 return ((EnumValue)value).Value;
             }
             else
-                return StringToEnum(value.ToString(), targetType);
+            {
+                if (value == null)
+                    return null;
+                else
+                    return StringToEnum(value.ToString(), targetType);
+            }
 
         }
     }
