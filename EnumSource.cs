@@ -33,35 +33,24 @@ namespace Tonic.UI
             {
                 var type = (Type)value;
                 if (!type.IsEnum)
-                    throw new ArgumentException("EnumToItemsSource requieres that the given type is a non-nullable enum");
+                    throw new ArgumentException("EnumToItemsSource requires that the given type is a non-nullable Enum");
                 _type = type;
             }
             else if (value is Binding)
             {
                 _binding = (Binding)value;
             }
-            else if (value is string)
+            else if (value is string str)
             {
-                _binding = new Binding((string)value);
-                _binding.Mode = BindingMode.OneWay;
+                _binding = new Binding(str)
+                {
+                    Mode = BindingMode.OneWay
+                };
             }
             else
-                throw new ArgumentException("Value must be an enum type, a Binding or an string");
+                throw new ArgumentException("Value must be an Enum type, a Binding or an string");
         }
 
-
-        private Type GetPropertyType(IServiceProvider serviceProvider)
-        {
-            //provider of target object and it's property
-            var targetProvider = (IProvideValueTarget)serviceProvider
-                .GetService(typeof(IProvideValueTarget));
-            if (targetProvider.TargetProperty is DependencyProperty)
-            {
-                return ((DependencyProperty)targetProvider.TargetProperty).PropertyType;
-            }
-
-            return targetProvider.TargetProperty.GetType();
-        }
 
         static readonly DependencyProperty BindingProperty =
      DependencyProperty.RegisterAttached(
@@ -70,8 +59,18 @@ namespace Tonic.UI
          typeof(EnumSource),
          new PropertyMetadata());
 
+        // https://stackoverflow.com/questions/944087/get-value-from-datacontext-to-markupextension
         public override object ProvideValue(IServiceProvider serviceProvider)
         {
+            if (!(serviceProvider is IProvideValueTarget pvt))
+            {
+                return null;
+            }
+            if (!(pvt.TargetObject is FrameworkElement frameworkElement))
+            {
+                return this;
+            }
+
             //If the type is unknown;
             if (_type == null)
             {
@@ -81,15 +80,18 @@ namespace Tonic.UI
                 var target = (FrameworkElement)targetProvider.TargetObject;
 
                 //Extract indirectly the property type and the enum info using the GetTypeEnumConverter:
-                var B = new Binding(_binding.Path.Path);
-                B.Mode = BindingMode.TwoWay;
-                var conv = new GetTypeEnumConverter();
-                conv.UseDescription = Friendly;
-                B.Converter = conv;
+                var binding = new Binding(_binding.Path.Path)
+                {
+                    Mode = BindingMode.TwoWay,
 
-                var r = (BindingExpression)B.ProvideValue(serviceProvider);
-                conv.expr = r;
-                return r;
+                };
+                var conv = new GetTypeEnumConverter
+                {
+                    UseDescription = Friendly
+                };
+                binding.Converter = conv;
+                conv.Expression = (BindingExpression)binding.ProvideValue(serviceProvider);
+                return conv.Expression;
             }
             else
             {
@@ -102,14 +104,14 @@ namespace Tonic.UI
         }
 
         /// <summary>
-        /// Get the enum values for a given enum type
+        /// Get the Enum values for a given Enum type
         /// </summary>
-        /// <param name="Type">Enum or nullable enum type</param>
+        /// <param name="Type">Enum or nullable Enum type</param>
         /// <returns></returns>
         public static IEnumerable<object> GetEnumValues(Type Type)
         {
             //Extract nullable argument:
-            if(Type.IsGenericType && Type.GetGenericTypeDefinition() == typeof(Nullable<>))
+            if (Type.IsGenericType && Type.GetGenericTypeDefinition() == typeof(Nullable<>))
             {
                 Type = Type.GetGenericArguments()[0];
             }

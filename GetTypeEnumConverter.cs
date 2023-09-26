@@ -4,29 +4,32 @@ using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Data;
 
 namespace Tonic.UI
 {
     class GetTypeEnumConverter : IValueConverter
     {
-        public BindingExpression expr;
+        private object cache;
+
+        public BindingExpression Expression { get; set; }
         /// <summary>
         /// True to use Friendly names
         /// </summary>
-        public bool UseDescription;
+        public bool UseDescription { get; set; }
         /// <summary>
         /// Null if the type is still unknown
         /// </summary>
-        private Type Type;
+        private Type Type { get; set; }
 
-        private object cache;
+
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            if (expr == null) return null;
+            if (Expression == null) return null;
 
             if (Type == null)
-                Type = PropertyPathHelper.GetSourcePropertyType(expr.ResolvedSource, expr.ResolvedSourcePropertyName);
+                Type = Expression.ResolvedSource.GetType().GetProperty(Expression.ResolvedSourcePropertyName).GetValue(Expression.ResolvedSource).GetType();
 
             //El cache no es solo por rendimiento, si no es utilizado, cada vez que se llama a este metodo,
             //aunque sean los mismos valores devuelve una instancia de un arreglo diferente, lo que ocasiona que

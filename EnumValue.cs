@@ -9,16 +9,15 @@ namespace Tonic.UI
     class EnumValue
     {
         private static Dictionary<object, EnumValue> cache = new Dictionary<object, EnumValue>();
-        private static EnumValue nullValue = new EnumValue (null);
+        private static EnumValue nullValue = new EnumValue(null);
         public static EnumValue Create(object value)
         {
-            if(value == null)
+            if (value == null)
                 return nullValue;
 
             lock (cache)
             {
-                EnumValue ret;
-                if (!cache.TryGetValue(value, out ret))
+                if (!cache.TryGetValue(value, out EnumValue ret))
                 {
                     ret = new EnumValue(value);
                     cache.Add(value, ret);
@@ -32,10 +31,8 @@ namespace Tonic.UI
             this.Description = EnumConverter.EnumToString(Value);
         }
 
-        public object Value
-        {
-            get; private set;
-        }
+        public object Value { get; private set; }
+
         public string Description { get; private set; }
 
         public override string ToString()

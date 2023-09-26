@@ -50,9 +50,8 @@
     <Compile Include="EnumConverter.cs" />
     <Compile Include="EnumSource.cs" />
     <Compile Include="EnumValue.cs" />
-    <Compile Include="GetTypeConverter.cs" />
+    <Compile Include="GetTypeEnumConverter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="PropertyPathHelper.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
