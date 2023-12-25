@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Markup;
 
@@ -36,9 +37,9 @@ namespace Tonic.UI
                     throw new ArgumentException("EnumToItemsSource requires that the given type is a non-nullable Enum");
                 _type = type;
             }
-            else if (value is Binding)
+            else if (value is Binding binding)
             {
-                _binding = (Binding)value;
+                _binding = binding;
             }
             else if (value is string str)
             {
@@ -52,14 +53,18 @@ namespace Tonic.UI
         }
 
 
-        static readonly DependencyProperty BindingProperty =
+        public static readonly DependencyProperty BindingProperty =
      DependencyProperty.RegisterAttached(
          "Binding",
          typeof(Type),
          typeof(EnumSource),
          new PropertyMetadata());
 
-        // https://stackoverflow.com/questions/944087/get-value-from-datacontext-to-markupextension
+        /// <summary>
+        /// <a href="https://stackoverflow.com/questions/944087/get-value-from-datacontext-to-markupextension"></a>
+        /// </summary>
+        /// <param name="serviceProvider"></param>
+        /// <returns></returns>
         public override object ProvideValue(IServiceProvider serviceProvider)
         {
             if (!(serviceProvider is IProvideValueTarget pvt))
@@ -75,23 +80,26 @@ namespace Tonic.UI
             if (_type == null)
             {
                 //provider of target object and it's property
-                var targetProvider = (IProvideValueTarget)serviceProvider
-                    .GetService(typeof(IProvideValueTarget));
+                var targetProvider = (IProvideValueTarget)serviceProvider.GetService(typeof(IProvideValueTarget));
                 var target = (FrameworkElement)targetProvider.TargetObject;
 
                 //Extract indirectly the property type and the enum info using the GetTypeEnumConverter:
-                var binding = new Binding(_binding.Path.Path)
-                {
-                    Mode = BindingMode.TwoWay,
-
-                };
                 var conv = new GetTypeEnumConverter
                 {
                     UseDescription = Friendly
                 };
-                binding.Converter = conv;
-                conv.Expression = (BindingExpression)binding.ProvideValue(serviceProvider);
-                return conv.Expression;
+
+                if (_binding.Path != null)
+                {
+                    var binding = new Binding(_binding.Path.Path)
+                    {
+                        Mode = BindingMode.TwoWay,
+                        Converter = conv
+                    };
+
+                    return conv.Expression = (BindingExpression)binding.ProvideValue(serviceProvider);
+                }
+                return null;
             }
             else
             {

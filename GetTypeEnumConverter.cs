@@ -29,7 +29,10 @@ namespace Tonic.UI
             if (Expression == null) return null;
 
             if (Type == null)
-                Type = Expression.ResolvedSource.GetType().GetProperty(Expression.ResolvedSourcePropertyName).GetValue(Expression.ResolvedSource).GetType();
+                Type = Expression.ResolvedSource.GetType().GetProperty(Expression.ResolvedSourcePropertyName).GetValue(Expression.ResolvedSource)?.GetType();
+
+            if(Type ==null)
+                return DependencyProperty.UnsetValue;
 
             //El cache no es solo por rendimiento, si no es utilizado, cada vez que se llama a este metodo,
             //aunque sean los mismos valores devuelve una instancia de un arreglo diferente, lo que ocasiona que
